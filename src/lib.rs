@@ -1,3 +1,6 @@
+pub mod input;
+pub mod ascii;
+
 use std::fs::File;
 use std::io;
 use std::io::BufRead;

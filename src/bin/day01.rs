@@ -1,20 +1,7 @@
-use adventofcode2024::read_lines;
+use adventofcode2024::input::AocInput;
 
-fn read_input() -> (Vec<i64>, Vec<i64>) {
-    let mut first_values = Vec::new();
-    let mut second_values = Vec::new();
-    for line in read_lines("inputs/day01.txt") {
-        let mut split = line.split_whitespace();
-        let first: i64 = split.next().unwrap().parse().unwrap();
-        let second: i64 = split.next().unwrap().parse().unwrap();
-        first_values.push(first);
-        second_values.push(second);
-    }
-    (first_values, second_values)
-}
-
-fn part1() {
-    let (mut first_values, mut second_values) = read_input();
+fn part1(i: &mut AocInput) {
+    let (mut first_values, mut second_values) = i.get_vector_of_number_pairs();
     first_values.sort();
     second_values.sort();
     let both = first_values.iter().zip(second_values.iter());
@@ -24,8 +11,8 @@ fn part1() {
     println!("Part1: {}", res);
 }
 
-fn part2() {
-    let (first_values, second_values) = read_input();
+fn part2(i: &mut AocInput) {
+    let (first_values, second_values) = i.get_vector_of_number_pairs();
     let mut res: i64 = 0;
     for i in first_values {
         let occ = second_values.iter().filter(|j| i == **j).count() as i64;
@@ -35,6 +22,8 @@ fn part2() {
 }
 
 fn main() {
-    part1();
-    part2();
+    let mut i = AocInput::new("inputs/day01.txt");
+    part1(&mut i);
+    i.reset();
+    part2(&mut i);
 }

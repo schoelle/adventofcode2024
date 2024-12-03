@@ -1,4 +1,4 @@
-use adventofcode2024::input::AocInput;
+use adventofcode2024::read_lines;
 
 fn is_safe(line: &Vec<i64>) -> bool {
     let mut min_step = std::i64::MAX;
@@ -26,19 +26,21 @@ fn is_safe_dampened(line: &Vec<i64>) -> bool {
     return false;
 }
 
-fn part1(i: &mut AocInput) {
-    let cnt = i.get_vector_of_number_rows().into_iter().filter(is_safe).count();
+fn part1() {
+    let cnt = read_lines("inputs/day02.txt").iter().map(
+        |l| l.split_whitespace().map(|x| x.parse::<i64>().unwrap()).collect()
+    ).filter(is_safe).count();
     println!("Part 1: {}", cnt);
 }
 
-fn part2(i: &mut AocInput) {
-    let cnt = i.get_vector_of_number_rows().into_iter().filter(is_safe_dampened).count();
+fn part2() {
+    let cnt = read_lines("inputs/day02.txt").iter().map(
+        |l| l.split_whitespace().map(|x| x.parse::<i64>().unwrap()).collect()
+    ).filter(is_safe_dampened).count();
     println!("Part 2: {}", cnt);
 }
 
 fn main() {
-    let mut i = AocInput::new("inputs/day02.txt");
-    part1(&mut i);
-    i.reset();
-    part2(&mut i);
+    part1();
+    part2();
 }

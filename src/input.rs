@@ -57,6 +57,16 @@ impl AocInput {
         res
     }
 
+    pub fn get_lines(self: &mut AocInput) -> Vec<String> {
+        self.skip_empty();
+        let mut res = Vec::new();
+        while self.has_data() {
+            res.push(self.current().clone());
+            self.read_next();
+        }
+        res
+    }
+
     pub fn get_vector_of_numbers(self: &mut AocInput) -> Vec<i64> {
         self.skip_empty();
         let mut res: Vec<i64> = Vec::new();

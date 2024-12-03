@@ -1,46 +1,43 @@
-use adventofcode2024::read_lines;
+use adventofcode2024::input::AocInput;
+use regex::Regex;
 
-fn is_safe(line: &Vec<i64>) -> bool {
-    let mut min_step = std::i64::MAX;
-    let mut max_step = std::i64::MIN;
-    let mut it = line.iter();
-    let mut last: &i64 = it.next().unwrap();
-    for v in it {
-        min_step = min_step.min(v - last);
-        max_step = max_step.max(v - last);
-        last = v;
-    }
-    let lower = min_step.abs().min(max_step.abs());
-    let upper = min_step.abs().max(max_step.abs());
-    (min_step * max_step > 0) & (lower > 0) & (upper < 4)
-}
-
-fn is_safe_dampened(line: &Vec<i64>) -> bool {
-    for i in 0..line.len() {
-        let mut l = line.clone();
-        l.remove(i);
-        if is_safe(&l) {
-            return true;
+fn part1(input: &mut AocInput) {
+    let re = Regex::new(r"mul\((?<a>\d+),(?<b>\d+)\)").unwrap();
+    let mut res = 0;
+    for line in input.get_lines() {
+        for exp in re.captures_iter(&line) {
+            let a = exp.name("a").unwrap().as_str().parse::<i64>().unwrap();
+            let b = exp.name("b").unwrap().as_str().parse::<i64>().unwrap();
+            res += a * b;
         }
     }
-    return false;
+    println!("Part 1: {}", res);
 }
 
-fn part1() {
-    let cnt = read_lines("inputs/day02.txt").iter().map(
-        |l| l.split_whitespace().map(|x| x.parse::<i64>().unwrap()).collect()
-    ).filter(is_safe).count();
-    println!("Part 1: {}", cnt);
-}
+fn part2(input: &mut AocInput) {
+    let re = Regex::new(r"do\(\)|don't\(\)|mul\((?<a>\d+),(?<b>\d+)\)").unwrap();
+    let mut res = 0;
+    let mut enabled = true;
+    for line in input.get_lines() {
+        for exp in re.captures_iter(&line) {
+            if exp.get(0).unwrap().as_str() == "do()" {
+                enabled = true;
+            } else if exp.get(0).unwrap().as_str() == "don't()" {
+                enabled = false;
+            } else if enabled{
+                let a = exp.name("a").unwrap().as_str().parse::<i64>().unwrap();
+                let b = exp.name("b").unwrap().as_str().parse::<i64>().unwrap();
+                res += a * b;
+            }
 
-fn part2() {
-    let cnt = read_lines("inputs/day02.txt").iter().map(
-        |l| l.split_whitespace().map(|x| x.parse::<i64>().unwrap()).collect()
-    ).filter(is_safe_dampened).count();
-    println!("Part 2: {}", cnt);
+        }
+    }
+    println!("Part 1: {}", res);
 }
 
 fn main() {
-    part1();
-    part2();
+    let mut input = AocInput::new("inputs/day03.txt");
+    part1(&mut input);
+    input.reset();
+    part2(&mut input);
 }

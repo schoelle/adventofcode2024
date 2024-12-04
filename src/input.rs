@@ -6,8 +6,8 @@ use std::io::{BufRead, BufReader, Lines};
 #[allow(dead_code)]
 pub struct AocInput {
     filename: &'static str,
-    content: Lines<BufReader<File>>,
-    last_line: Option<String>,
+    reader: Lines<BufReader<File>>,
+    current_line: Option<String>,
 }
 
 #[allow(dead_code)]
@@ -17,20 +17,20 @@ impl AocInput {
         let reader = BufReader::new(file).lines();
         AocInput {
             filename,
-            content: reader,
-            last_line: Some(String::from("")),
+            reader: reader,
+            current_line: Some(String::from("")),
         }
     }
 
     pub fn reset(self: &mut AocInput) {
         let file = File::open(self.filename).unwrap();
-        self.content = io::BufReader::new(file).lines();
-        self.last_line = Some(String::from(""));
+        self.reader = io::BufReader::new(file).lines();
+        self.current_line = Some(String::from(""));
     }
 
     fn next_line(self: &mut AocInput) {
-        let next = self.content.next();
-        self.last_line = match next {
+        let next = self.reader.next();
+        self.current_line = match next {
             Some(Ok(l)) => Some(l),
             Some(Err(_)) => None,
             None => None,
@@ -38,15 +38,15 @@ impl AocInput {
     }
 
     fn has_data(self: &AocInput) -> bool {
-        self.last_line.is_some() && !self.last_line.as_ref().unwrap().is_empty()
+        self.current_line.is_some() && !self.current_line.as_ref().unwrap().is_empty()
     }
 
     fn current(self: &AocInput) -> &String {
-        self.last_line.as_ref().unwrap()
+        self.current_line.as_ref().unwrap()
     }
 
     fn skip_empty(self: &mut AocInput) {
-        while self.last_line.is_some() && self.last_line.as_ref().unwrap().is_empty() {
+        while self.current_line.is_some() && self.current_line.as_ref().unwrap().is_empty() {
             self.next_line();
         }
     }

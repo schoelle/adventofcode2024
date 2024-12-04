@@ -2,12 +2,12 @@ use adventofcode2024::input::AocInput;
 use regex::Regex;
 
 fn part1(input: &mut AocInput) {
-    let re = Regex::new(r"mul\((?<a>\d+),(?<b>\d+)\)").unwrap();
+    let re = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
     let mut res = 0;
     for line in input.read_lines() {
         for exp in re.captures_iter(&line) {
-            let a = exp.name("a").unwrap().as_str().parse::<i64>().unwrap();
-            let b = exp.name("b").unwrap().as_str().parse::<i64>().unwrap();
+            let a = exp.get(1).unwrap().as_str().parse::<i64>().unwrap();
+            let b = exp.get(2).unwrap().as_str().parse::<i64>().unwrap();
             res += a * b;
         }
     }
@@ -15,21 +15,22 @@ fn part1(input: &mut AocInput) {
 }
 
 fn part2(input: &mut AocInput) {
-    let re = Regex::new(r"do\(\)|don't\(\)|mul\((?<a>\d+),(?<b>\d+)\)").unwrap();
+    let re = Regex::new(r"do\(\)|don't\(\)|mul\((\d{1,3}),(\d{1,3})\)").unwrap();
     let mut res = 0;
     let mut enabled = true;
     for line in input.read_lines() {
         for exp in re.captures_iter(&line) {
-            if exp.get(0).unwrap().as_str() == "do()" {
-                enabled = true;
-            } else if exp.get(0).unwrap().as_str() == "don't()" {
-                enabled = false;
-            } else if enabled{
-                let a = exp.name("a").unwrap().as_str().parse::<i64>().unwrap();
-                let b = exp.name("b").unwrap().as_str().parse::<i64>().unwrap();
-                res += a * b;
+            match exp.get(0).unwrap().as_str() {
+                "do()" => { enabled = true}
+                "don't()" => { enabled = false}
+                _ => {
+                    if enabled {
+                        let a = exp.get(1).unwrap().as_str().parse::<i64>().unwrap();
+                        let b = exp.get(2).unwrap().as_str().parse::<i64>().unwrap();
+                        res += a * b;
+                    }
+                }
             }
-
         }
     }
     println!("Part 1: {}", res);

@@ -39,8 +39,7 @@ fn part2(m: &Map) {
 
 fn main() {
     let mut input = AocInput::new("inputs/day04.txt");
-    let mut map = input.read_map();
-    map.expand('.');
+    let map = input.read_map();
     part1(&map);
     part2(&map);
 }

@@ -89,26 +89,52 @@ pub struct Map {
     pub width: i64,
     pub height: i64,
     content: Vec<Vec<char>>,
+    background: char,
 }
 
 #[allow(dead_code)]
 impl Map {
     pub fn new(content: Vec<Vec<char>>) -> Map {
+        assert!(!content.is_empty());
+        assert!(!content.get(0).unwrap().is_empty());
         let height = content.len() as i64;
         let width = content.get(0).unwrap().len() as i64;
+        assert!(content.iter().all(|x| x.len() as i64 == width));
         Map {
             width,
             height,
             content,
+            background: ' ',
         }
     }
 
+    pub fn valid_pos(&self, pos: Pos) -> bool {
+        pos.0 >= 0 && pos.0 < self.width && pos.1 >= 0 && pos.1 < self.height
+    }
+
     pub fn get(&self, pos: Pos) -> char {
-        self.content
-            .get(pos.1 as usize)
-            .unwrap()
-            .get(pos.0 as usize)
-            .unwrap().clone()
+        if self.valid_pos(pos) {
+            self.content[pos.1 as usize][pos.0 as usize].clone()
+        } else {
+            self.background
+        }
+    }
+
+    pub fn empty(&self, pos: Pos) -> bool {
+        self.get(pos) == self.background
+    }
+
+    pub fn set(&mut self, pos: Pos, c: char) {
+        assert!(self.valid_pos(pos));
+        self.content[pos.1 as usize][pos.0 as usize] = c
+    }
+
+    pub fn clear(&mut self, pos: Pos) {
+        self.set(pos, self.background)
+    }
+    
+    pub fn set_background(&mut self, bg: char) {
+        self.background = bg;
     }
 
     pub fn to_string(&self) -> String {
@@ -132,5 +158,9 @@ impl Map {
         }
         content.push(std::iter::repeat(c).take(self.width as usize).collect());
         self.content = content
+    }
+
+    pub fn wrap(&self, p: Pos) -> Pos {
+        p.wrap(self.width, self.height)
     }
 }

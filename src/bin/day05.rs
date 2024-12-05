@@ -1,8 +1,10 @@
 use std::cmp::Ordering::{Greater, Less};
 use std::collections::HashSet;
+use std::time::Instant;
 use adventofcode2024::input::AocInput;
 
 fn main() {
+    let start = Instant::now();
     let mut input = AocInput::new("inputs/day05.txt");
     let mut order: HashSet<(i64, i64)> = HashSet::new();
     input.read_vector_of_number_rows_by('|').iter().for_each(|v| {
@@ -34,4 +36,6 @@ fn main() {
     }
     println!("Part 1: {}", part1);
     println!("Part 2: {}", part2);
+    let duration = start.elapsed();
+    println!("Time: {:?}", duration);
 }

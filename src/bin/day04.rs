@@ -1,3 +1,4 @@
+use std::time::Instant;
 use adventofcode2024::ascii::{Dir, Map, Pos};
 use adventofcode2024::input::AocInput;
 use enum_iterator::all;
@@ -38,8 +39,11 @@ fn part2(m: &Map) {
 }
 
 fn main() {
+    let start = Instant::now();
     let mut input = AocInput::new("inputs/day04.txt");
     let map = input.read_map();
     part1(&map);
     part2(&map);
+    let duration = start.elapsed();
+    println!("Time: {:?}", duration);
 }

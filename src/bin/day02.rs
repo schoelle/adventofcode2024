@@ -1,3 +1,4 @@
+use std::time::Instant;
 use adventofcode2024::input::AocInput;
 
 fn is_safe(line: &Vec<i64>) -> bool {
@@ -37,8 +38,11 @@ fn part2(i: &mut AocInput) {
 }
 
 fn main() {
+    let start = Instant::now();
     let mut i = AocInput::new("inputs/day02.txt");
     part1(&mut i);
     i.reset();
     part2(&mut i);
+    let duration = start.elapsed();
+    println!("Time: {:?}", duration);
 }

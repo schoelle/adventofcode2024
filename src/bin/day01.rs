@@ -1,3 +1,4 @@
+use std::time::Instant;
 use adventofcode2024::input::AocInput;
 
 fn part1(i: &mut AocInput) {
@@ -22,8 +23,11 @@ fn part2(i: &mut AocInput) {
 }
 
 fn main() {
+    let start = Instant::now();
     let mut i = AocInput::new("inputs/day01.txt");
     part1(&mut i);
     i.reset();
     part2(&mut i);
+    let duration = start.elapsed();
+    println!("Time: {:?}", duration);
 }

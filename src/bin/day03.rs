@@ -1,3 +1,4 @@
+use std::time::Instant;
 use adventofcode2024::input::AocInput;
 use regex::Regex;
 
@@ -37,8 +38,11 @@ fn part2(input: &mut AocInput) {
 }
 
 fn main() {
+    let start = Instant::now();
     let mut input = AocInput::new("inputs/day03.txt");
     part1(&mut input);
     input.reset();
     part2(&mut input);
+    let duration = start.elapsed();
+    println!("Time: {:?}", duration);
 }

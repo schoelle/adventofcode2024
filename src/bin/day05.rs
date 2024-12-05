@@ -2,17 +2,6 @@ use std::cmp::Ordering::{Equal, Greater, Less};
 use std::collections::HashSet;
 use adventofcode2024::input::AocInput;
 
-fn sort_book(book: &mut Vec<i64>, order: &HashSet<(i64,i64)>) {
-    book.sort_by(|a,b|
-        if order.contains(&(*a,*b)) {
-            Less
-        } else if order.contains(&(*b,*a)) {
-            Greater
-        } else {
-            Equal
-        })
-}
-
 fn main() {
     let mut input = AocInput::new("inputs/day05.txt");
     let mut order: HashSet<(i64, i64)> = HashSet::new();
@@ -24,12 +13,9 @@ fn main() {
     let mut part2 = 0;
     for book in books {
         let mut correct = true;
-        for (pos1, value1) in book.iter().enumerate() {
-            for (pos2, value2) in book.iter().enumerate() {
-                let pair = (value2.clone(), value1.clone());
-                if pos1 < pos2 && order.contains(&pair) {
-                    correct = false;
-                }
+        for i in 0..book.len() {
+            for j in i+1..book.len() {
+                correct = correct && !order.contains(&(book[j].clone(), book[i].clone()))
             }
         }
         if correct {
@@ -37,11 +23,17 @@ fn main() {
             part1 += middle;
         } else {
             let mut srt = book.clone();
-            sort_book(&mut srt, &order);
+            srt.sort_by(|a,b|
+                if order.contains(&(*a,*b)) {
+                    Less
+                } else if order.contains(&(*b,*a)) {
+                    Greater
+                } else {
+                    Equal
+                });
             let middle = srt[srt.len() / 2];
             part2 += middle;
         }
-
     }
     println!("Part 1: {}", part1);
     println!("Part 2: {}", part2);

@@ -1,4 +1,4 @@
-use std::cmp::Ordering::{Equal, Greater, Less};
+use std::cmp::Ordering::{Greater, Less};
 use std::collections::HashSet;
 use adventofcode2024::input::AocInput;
 
@@ -30,7 +30,7 @@ fn main() {
                 } else if order.contains(&(*b,*a)) {
                     Greater
                 } else {
-                    Equal
+                    panic!("order missing between {} and {}", a, b);
                 });
             part2 += srt[srt.len() / 2];
         }

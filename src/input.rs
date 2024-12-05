@@ -97,8 +97,8 @@ impl AocInput {
         let mut right: Vec<i64> = Vec::new();
         while self.has_data() {
             let mut split = self.current().split(del);
-            left.push(split.next().unwrap().parse().unwrap());
-            right.push(split.next().unwrap().parse().unwrap());
+            left.push(split.next().unwrap().trim().parse().unwrap());
+            right.push(split.next().unwrap().trim().parse().unwrap());
             self.next_line();
         }
         (left, right)
@@ -126,7 +126,7 @@ impl AocInput {
             res.push(
                 self.current()
                     .split(del)
-                    .map(|x| x.parse::<i64>().unwrap())
+                    .map(|x| x.trim().parse::<i64>().unwrap())
                     .collect(),
             );
             self.next_line()

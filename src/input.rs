@@ -91,6 +91,19 @@ impl AocInput {
         (left, right)
     }
 
+    pub fn read_vector_of_number_pairs_by(self: &mut AocInput, del: char) -> (Vec<i64>, Vec<i64>) {
+        self.skip_empty();
+        let mut left: Vec<i64> = Vec::new();
+        let mut right: Vec<i64> = Vec::new();
+        while self.has_data() {
+            let mut split = self.current().split(del);
+            left.push(split.next().unwrap().parse().unwrap());
+            right.push(split.next().unwrap().parse().unwrap());
+            self.next_line();
+        }
+        (left, right)
+    }
+    
     pub fn read_vector_of_number_rows(self: &mut AocInput) -> Vec<Vec<i64>> {
         self.skip_empty();
         let mut res = Vec::new();
@@ -98,6 +111,21 @@ impl AocInput {
             res.push(
                 self.current()
                     .split_whitespace()
+                    .map(|x| x.parse::<i64>().unwrap())
+                    .collect(),
+            );
+            self.next_line()
+        }
+        res
+    }
+
+    pub fn read_vector_of_number_rows_by(self: &mut AocInput, del: char) -> Vec<Vec<i64>> {
+        self.skip_empty();
+        let mut res = Vec::new();
+        while self.has_data() {
+            res.push(
+                self.current()
+                    .split(del)
                     .map(|x| x.parse::<i64>().unwrap())
                     .collect(),
             );

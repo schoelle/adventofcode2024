@@ -14,10 +14,7 @@ fn main() {
     for book in books {
         let mut correct = true;
         for i in 0..book.len() {
-            for j in i+1..book.len() {
-                correct = correct && !order.contains(&(book[j], book[i]));
-                if !correct { break; }
-            }
+            correct = !(i+1..book.len()).any(|j| order.contains(&(book[j], book[i])));
             if !correct { break; }
         }
         if correct {

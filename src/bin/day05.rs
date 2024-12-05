@@ -15,7 +15,7 @@ fn main() {
         let mut correct = true;
         for i in 0..book.len() {
             for j in i+1..book.len() {
-                correct = correct && !order.contains(&(book[j].clone(), book[i].clone()));
+                correct = correct && !order.contains(&(book[j], book[i]));
                 if !correct { break; }
             }
             if !correct { break; }

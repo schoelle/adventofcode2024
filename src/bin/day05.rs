@@ -15,12 +15,13 @@ fn main() {
         let mut correct = true;
         for i in 0..book.len() {
             for j in i+1..book.len() {
-                correct = correct && !order.contains(&(book[j].clone(), book[i].clone()))
+                correct = correct && !order.contains(&(book[j].clone(), book[i].clone()));
+                if !correct { break; }
             }
+            if !correct { break; }
         }
         if correct {
-            let middle = book[book.len() / 2];
-            part1 += middle;
+            part1 += book[book.len() / 2];
         } else {
             let mut srt = book.clone();
             srt.sort_by(|a,b|
@@ -31,8 +32,7 @@ fn main() {
                 } else {
                     Equal
                 });
-            let middle = srt[srt.len() / 2];
-            part2 += middle;
+            part2 += srt[srt.len() / 2];
         }
     }
     println!("Part 1: {}", part1);

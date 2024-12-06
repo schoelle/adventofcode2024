@@ -13,9 +13,9 @@ fn check1(m: &Map, p: Pos, d: Dir) -> bool {
 fn check2(m: &Map, p: Pos, d: Dir) -> bool {
     m.get(p) == 'A' &&
         m.get(p.nstep(d, 1)) == 'M' &&
-        m.get(p.nstep(d.left90(), 1)) == 'M' &&
+        m.get(p.nstep(d.right90(), 1)) == 'M' &&
         m.get(p.nstep(d.rev(), 1)) == 'S' &&
-        m.get(p.nstep(d.right90(), 1)) == 'S'
+        m.get(p.nstep(d.left90(), 1)) == 'S'
 }
 
 fn part1(m: &Map) {

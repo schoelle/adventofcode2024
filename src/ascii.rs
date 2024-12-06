@@ -15,7 +15,7 @@ pub enum Dir {
 
 #[allow(dead_code)]
 impl Dir {
-    pub fn left45(&self) -> Dir {
+    pub fn right45(&self) -> Dir {
         match self {
             Dir::N => Dir::NE,
             Dir::NE => Dir::E,
@@ -28,20 +28,20 @@ impl Dir {
         }
     }
 
-    pub fn left90(&self) -> Dir {
-        self.left45().left45()
+    pub fn right90(&self) -> Dir {
+        self.right45().right45()
     }
 
     pub fn rev(&self) -> Dir {
-        self.left90().left90()
+        self.right90().right90()
     }
 
-    pub fn right90(&self) -> Dir {
-        self.rev().left90()
+    pub fn left90(&self) -> Dir {
+        self.rev().right90()
     }
 
-    pub fn right45(&self) -> Dir {
-        self.right90().left45()
+    pub fn left45(&self) -> Dir {
+        self.left90().right45()
     }
 
     pub fn to_char(&self) -> char {
@@ -162,5 +162,18 @@ impl Map {
 
     pub fn wrap(&self, p: Pos) -> Pos {
         p.wrap(self.width, self.height)
+    }
+
+    pub fn find(&self, c: char) -> Vec<Pos> {
+        let mut res = Vec::new();
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let pos = Pos(x,y);
+                if self.get(pos) == c {
+                    res.push(pos);
+                }
+            }
+        }
+        res
     }
 }

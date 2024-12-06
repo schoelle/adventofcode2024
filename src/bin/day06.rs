@@ -1,7 +1,7 @@
-use std::collections::HashSet;
-use adventofcode2024::input::AocInput;
-use std::time::Instant;
 use adventofcode2024::ascii::{Dir, Map, Pos};
+use adventofcode2024::input::AocInput;
+use std::collections::HashSet;
+use std::time::Instant;
 
 fn part1(map: &Map) -> HashSet<Pos> {
     let start = map.find('^')[0];
@@ -9,14 +9,13 @@ fn part1(map: &Map) -> HashSet<Pos> {
     let mut dir = Dir::N;
     let mut visited: HashSet<Pos> = HashSet::from([pos]);
     while map.get(pos) != ' ' {
+        visited.insert(pos);
         if map.get(pos.step(dir)) == '#' {
             dir = dir.right90();
         } else {
             pos = pos.step(dir);
-            visited.insert(pos);
         }
     }
-    visited.remove(&pos);
     println!("Part 1: {:?}", visited.len());
     visited.remove(&start);
     visited
@@ -42,7 +41,7 @@ fn loops(map: &Map, obstruction: &Pos) -> bool {
 }
 
 fn part2(map: &Map, visited: &HashSet<Pos>) {
-    let cnt = visited.iter().filter(|p| loops(map,p)).count();
+    let cnt = visited.iter().filter(|p| loops(map, p)).count();
     println!("Part 2: {}", cnt);
 }
 

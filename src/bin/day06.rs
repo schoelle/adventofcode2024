@@ -23,7 +23,7 @@ fn part1(map: &Map, start: Pos) -> HashSet<Pos> {
 fn loops(map: &Map, start: Pos, obstruction: Pos) -> bool {
     let mut pos = start;
     let mut dir = Dir::N;
-    let mut state_history: HashSet<(Pos, Dir)> = HashSet::new();
+    let mut state_history: HashSet<(Pos, Dir)> = HashSet::with_capacity(10000 as usize);
     while map.get(pos) != ' ' {
         if state_history.contains(&(pos, dir)) {
             return true;

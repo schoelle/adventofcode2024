@@ -3,8 +3,9 @@ use adventofcode2024::input::AocInput;
 use std::time::Instant;
 use adventofcode2024::ascii::{Dir, Map, Pos};
 
-fn part1(map: &Map) {
-    let mut pos = map.find('^')[0];
+fn part1(map: &Map) -> HashSet<Pos> {
+    let start = map.find('^')[0];
+    let mut pos = start;
     let mut dir = Dir::N;
     let mut visited: HashSet<Pos> = HashSet::from([pos]);
     while map.get(pos) != ' ' {
@@ -15,20 +16,23 @@ fn part1(map: &Map) {
             visited.insert(pos);
         }
     }
-    println!("Part 1: {:?}", visited.len() - 1);
+    visited.remove(&pos);
+    println!("Part 1: {:?}", visited.len());
+    visited.remove(&start);
+    visited
 }
 
-fn loops(map: &Map, obstruction: Pos) -> bool {
+fn loops(map: &Map, obstruction: &Pos) -> bool {
     let mut pos = map.find('^')[0];
     let mut dir = Dir::N;
-    let mut state_history: HashSet<(Pos,Dir)> = HashSet::new();
+    let mut state_history: HashSet<(Pos, Dir)> = HashSet::new();
     while map.get(pos) != ' ' {
-        if state_history.contains(&(pos,dir)) {
+        if state_history.contains(&(pos, dir)) {
             return true;
         }
-        state_history.insert((pos,dir));
+        state_history.insert((pos, dir));
         let next = pos.step(dir);
-        if next == obstruction || map.get(next) == '#' {
+        if next == *obstruction || map.get(next) == '#' {
             dir = dir.right90();
         } else {
             pos = pos.step(dir);
@@ -37,17 +41,8 @@ fn loops(map: &Map, obstruction: Pos) -> bool {
     false
 }
 
-fn part2(map: &Map) {
-    let mut cnt = 0;
-    for y in 0..map.height {
-        for x in 0.. map.width {
-            let pos = Pos(x,y);
-            if map.get(pos) == '.' && loops(map, pos) {
-                cnt += 1;
-            }
-        }
-    }
-
+fn part2(map: &Map, visited: &HashSet<Pos>) {
+    let cnt = visited.iter().filter(|p| loops(map,p)).count();
     println!("Part 2: {}", cnt);
 }
 
@@ -55,8 +50,8 @@ fn main() {
     let start = Instant::now();
     let mut input = AocInput::new("inputs/day06.txt");
     let map = input.read_map();
-    part1(&map);
-    part2(&map);
+    let visited = part1(&map);
+    part2(&map, &visited);
     let duration = start.elapsed();
     println!("Time: {:?}", duration);
 }

@@ -3,8 +3,7 @@ use adventofcode2024::input::AocInput;
 use std::collections::HashSet;
 use std::time::Instant;
 
-fn part1(map: &Map) -> HashSet<Pos> {
-    let start = map.find('^')[0];
+fn part1(map: &Map, start: Pos) -> HashSet<Pos> {
     let mut pos = start;
     let mut dir = Dir::N;
     let mut visited: HashSet<Pos> = HashSet::from([pos]);
@@ -21,8 +20,8 @@ fn part1(map: &Map) -> HashSet<Pos> {
     visited
 }
 
-fn loops(map: &Map, obstruction: &Pos) -> bool {
-    let mut pos = map.find('^')[0];
+fn loops(map: &Map, start: Pos, obstruction: Pos) -> bool {
+    let mut pos = start;
     let mut dir = Dir::N;
     let mut state_history: HashSet<(Pos, Dir)> = HashSet::new();
     while map.get(pos) != ' ' {
@@ -31,7 +30,7 @@ fn loops(map: &Map, obstruction: &Pos) -> bool {
         }
         state_history.insert((pos, dir));
         let next = pos.step(dir);
-        if next == *obstruction || map.get(next) == '#' {
+        if next == obstruction || map.get(next) == '#' {
             dir = dir.right90();
         } else {
             pos = pos.step(dir);
@@ -40,8 +39,8 @@ fn loops(map: &Map, obstruction: &Pos) -> bool {
     false
 }
 
-fn part2(map: &Map, visited: &HashSet<Pos>) {
-    let cnt = visited.iter().filter(|p| loops(map, p)).count();
+fn part2(map: &Map, visited: &HashSet<Pos>, start: Pos) {
+    let cnt = visited.iter().filter(|p| loops(map, start, **p)).count();
     println!("Part 2: {}", cnt);
 }
 
@@ -49,8 +48,9 @@ fn main() {
     let start = Instant::now();
     let mut input = AocInput::new("inputs/day06.txt");
     let map = input.read_map();
-    let visited = part1(&map);
-    part2(&map, &visited);
+    let start_pos = map.find('^')[0];
+    let visited = part1(&map, start_pos);
+    part2(&map, &visited, start_pos);
     let duration = start.elapsed();
     println!("Time: {:?}", duration);
 }

@@ -2,6 +2,7 @@ use adventofcode2024::ascii::{Dir, Map, Pos};
 use adventofcode2024::input::AocInput;
 use std::collections::HashSet;
 use std::time::Instant;
+use rayon::prelude::*;
 
 fn part1(map: &Map, start: Pos) -> HashSet<Pos> {
     let mut pos = start;
@@ -40,7 +41,7 @@ fn loops(map: &Map, start: Pos, obstruction: Pos) -> bool {
 }
 
 fn part2(map: &Map, visited: &HashSet<Pos>, start: Pos) {
-    let cnt = visited.iter().filter(|p| loops(map, start, **p)).count();
+    let cnt = visited.par_iter().filter(|p| loops(map, start, **p)).count();
     println!("Part 2: {}", cnt);
 }
 

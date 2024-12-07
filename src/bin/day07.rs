@@ -3,8 +3,8 @@ use regex::Regex;
 use std::time::Instant;
 
 fn solves(target: i64, values: &[i64], part2: bool) -> bool {
-    if values.len() == 1 && values[0] == target {
-        return true;
+    if values.len() == 1 {
+        return values[0] == target;
     }
     if let Some((last, rest)) = values.split_last() {
         if target % last == 0 && solves(target / last, rest, part2) {

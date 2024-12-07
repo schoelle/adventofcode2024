@@ -5,22 +5,21 @@ fn solves(target: i64, values: &[i64], part2: bool) -> bool {
     if values.len() == 1 {
         return values[0] == target;
     }
-    if let Some((last, rest)) = values.split_last() {
-        if target % last == 0 && solves(target / last, rest, part2) {
-            return true;
-        }
-        if target >= *last && solves(target - last, rest, part2) {
-            return true;
-        }
-        if part2 {
-            let mask = 10i64.pow(last.ilog10() + 1);
-            if target % mask == *last {
-                if solves(target / mask, rest, part2) {
-                    return true;
-                }
+    let (last, rest) = values.split_last().unwrap();
+    if target % last == 0 && solves(target / last, rest, part2) {
+        return true;
+    }
+    if target >= *last && solves(target - last, rest, part2) {
+        return true;
+    }
+    if part2 {
+        let mask = 10i64.pow(last.ilog10() + 1);
+        if target % mask == *last {
+            if solves(target / mask, rest, part2) {
+                return true;
             }
         }
-    };
+    }
     false
 }
 
@@ -32,7 +31,10 @@ fn main() {
     for line in input.read_lines() {
         let (front, rest) = line.split_once(": ").unwrap();
         let target: i64 = front.parse().unwrap();
-        let values: Vec<i64> = rest.split_whitespace().map(|x| x.parse().unwrap()).collect();
+        let values: Vec<i64> = rest
+            .split_whitespace()
+            .map(|x| x.parse().unwrap())
+            .collect();
         if solves(target, &values, false) {
             part1 += target;
         }

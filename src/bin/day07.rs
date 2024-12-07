@@ -1,5 +1,4 @@
 use adventofcode2024::input::AocInput;
-use regex::Regex;
 use std::time::Instant;
 
 fn solves(target: i64, values: &[i64], part2: bool) -> bool {
@@ -32,23 +31,15 @@ fn main() {
     let mut input = AocInput::new("inputs/day07.txt");
     let mut part1 = 0;
     let mut part2 = 0;
-    let re = Regex::new(r"(\d+): (.*)").unwrap();
     for line in input.read_lines() {
-        if let Some(cap) = re.captures(&line) {
-            let target = cap.get(1).unwrap().as_str().parse::<i64>().unwrap();
-            let values: Vec<i64> = cap
-                .get(2)
-                .unwrap()
-                .as_str()
-                .split(' ')
-                .map(|v| v.parse::<i64>().unwrap())
-                .collect();
-            if solves(target, &values, false) {
-                part1 += target;
-            }
-            if solves(target, &values, true) {
-                part2 += target;
-            }
+        let (front, rest) = line.split_once(": ").unwrap();
+        let target: i64 = front.parse().unwrap();
+        let values: Vec<i64> = rest.split_whitespace().map(|x| x.parse().unwrap()).collect();
+        if solves(target, &values, false) {
+            part1 += target;
+        }
+        if solves(target, &values, true) {
+            part2 += target;
         }
     }
     println!("Part 1: {}", part1);

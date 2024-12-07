@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 regex = "1.11.1"
 enum-iterator = "2.1.0"
+rayon = "1.10.0"

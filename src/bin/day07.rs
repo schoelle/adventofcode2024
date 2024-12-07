@@ -13,11 +13,9 @@ fn solves(target: i64, values: &[i64], part2: bool) -> bool {
             return true;
         }
         if part2 {
-            let t_str = target.to_string();
-            let l_str = last.to_string();
-            if t_str.len() > l_str.len() && t_str.ends_with(l_str.as_str()) {
-                let r = &t_str.as_str()[0..t_str.len() - l_str.len()];
-                if solves(r.parse::<i64>().unwrap(), rest, part2) {
+            let mask = 10i64.pow(last.ilog10() + 1);
+            if target % mask == *last {
+                if solves(target / mask, rest, part2) {
                     return true;
                 }
             }

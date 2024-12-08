@@ -4,7 +4,7 @@ use std::collections::{HashMap, HashSet};
 use std::time::Instant;
 
 fn part1(table: &HashMap<char, Vec<Pos>>, map: &Map) {
-    let mut res = HashSet::new();
+    let mut res = HashSet::with_capacity(1000);
     for v in table.values() {
         for a in v.iter() {
             for b in v.iter() {
@@ -22,7 +22,7 @@ fn part1(table: &HashMap<char, Vec<Pos>>, map: &Map) {
 }
 
 fn part2(table: &HashMap<char, Vec<Pos>>, map: &Map) {
-    let mut res = HashSet::new();
+    let mut res = HashSet::with_capacity(1000);
     for v in table.values() {
         for a in v.iter() {
             for b in v.iter() {

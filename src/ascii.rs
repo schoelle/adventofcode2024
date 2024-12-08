@@ -83,6 +83,10 @@ impl Pos {
     pub fn step(&self, dir: Dir) -> Pos {
         self.nstep(dir, 1)
     }
+
+    pub fn sub(&self, other: &Pos) -> (i64, i64) {
+        return (self.0 - other.0, self.1 - other.1);
+    }
 }
 
 pub struct Map {
@@ -132,7 +136,7 @@ impl Map {
     pub fn clear(&mut self, pos: Pos) {
         self.set(pos, self.background)
     }
-    
+
     pub fn set_background(&mut self, bg: char) {
         self.background = bg;
     }
@@ -168,12 +172,40 @@ impl Map {
         let mut res = Vec::new();
         for y in 0..self.height {
             for x in 0..self.width {
-                let pos = Pos(x,y);
+                let pos = Pos(x, y);
                 if self.get(pos) == c {
                     res.push(pos);
                 }
             }
         }
         res
+    }
+
+    pub fn enumerate(&self) -> MapIterator {
+        MapIterator {
+            index: 0,
+            map: self,
+        }
+    }
+}
+
+pub struct MapIterator<'a> {
+    index: i64,
+    map: &'a Map,
+}
+
+impl Iterator for MapIterator<'_> {
+    type Item = (Pos, char);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let x = self.index % self.map.width;
+        let y = self.index / self.map.width;
+        self.index += 1;
+        if y >= self.map.height {
+            None
+        } else {
+            let p = Pos(x, y);
+            Some((p, self.map.get(p)))
+        }
     }
 }

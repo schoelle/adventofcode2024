@@ -11,7 +11,7 @@ fn part1(table: &HashMap<char, Vec<Pos>>, map: &Map) {
                 if *a != *b {
                     let (xd, yd) = a.sub(&b);
                     let anti = Pos(a.0 + xd, a.1 + yd);
-                   if map.valid_pos(anti) {
+                    if map.valid_pos(anti) {
                         res.insert(anti);
                     }
                 }

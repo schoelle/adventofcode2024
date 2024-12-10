@@ -61,7 +61,6 @@ fn part2(line: &str) {
             if empty_block.1 == file.1 {
                 disk[empty_pos] = file;
             } else {
-                disk[file_pos] = Block(-1, file.1);
                 disk[empty_pos] = Block(-1, empty_block.1 - file.1);
                 disk.insert(empty_pos, file);
             }

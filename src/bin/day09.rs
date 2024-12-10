@@ -70,9 +70,8 @@ fn part2(line: &str) {
     let mut sum: i64 = 0;
     for b in &disk {
         let size = b.1 as i64;
-        let value: i64 = (idx..idx + size).map(|v| v * b.0).sum();
         if b.0 != -1 {
-            sum += value;
+            sum += (idx..idx + size).map(|v| v * b.0).sum::<i64>();
         }
         idx += size;
     }

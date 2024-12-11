@@ -37,7 +37,7 @@ fn part1(stones: &Vec<i64>) {
 fn part2(stones: &Vec<i64>) {
     let mut cache = HashMap::new();
     println!(
-        "Part 1: {:?}",
+        "Part 2: {:?}",
         stones
             .iter()
             .map(|s| split_count(*s, 75, &mut cache))

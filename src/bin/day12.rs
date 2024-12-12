@@ -19,42 +19,83 @@ fn fill(start: Pos, map: &Map) -> HashSet<Pos> {
             }
         }
     }
-    println!("Plot: {} {} {:?}", map.get(start), plot.len(), plot);
     plot
 }
 
-
-fn calc_costs(plot: &HashSet<Pos>, map: &&Map) -> i64 {
+fn calc_costs1(plot: &HashSet<Pos>, map: &Map) -> i64 {
     let area = plot.len() as i64;
-    let fence: i64 = plot.iter().map(|c|
-        Vec::from([Dir::N, Dir::E, Dir::W, Dir::S]).into_iter().filter(|d| map.get(*c) != map.get(c.step(*d))).count() as i64
-    ).sum();
+    let fence: i64 = plot
+        .iter()
+        .map(|c| {
+            Vec::from([Dir::N, Dir::E, Dir::W, Dir::S])
+                .into_iter()
+                .filter(|d| map.get(*c) != map.get(c.step(*d)))
+                .count() as i64
+        })
+        .sum();
     area * fence
 }
-fn part1(map: &Map) {
-    let mut done: HashSet<Pos> = HashSet::new();
-    let mut costs = 0;
-    for (p, c) in map.enumerate() {
-        if !done.contains(&p) {
-            let plot = fill(p, &map);
-            costs += calc_costs(&plot, &map);
-            done.extend(&plot);
+
+fn calc_costs2(plot: &HashSet<Pos>, map: &Map) -> i64 {
+    let area = plot.len() as i64;
+    let mut nfence: HashSet<Pos> = HashSet::new();
+    let mut wfence: HashSet<Pos> = HashSet::new();
+    let mut efence: HashSet<Pos> = HashSet::new();
+    let mut sfence: HashSet<Pos> = HashSet::new();
+    let mut ncount: i64 = 0;
+    let mut scount: i64 = 0;
+    let mut ecount: i64 = 0;
+    let mut wcount: i64 = 0;
+    for p in map
+        .enumerate()
+        .map(|(p, _)| p)
+        .filter(|p| plot.contains(p))
+    {
+        if map.get(p.step(Dir::N)) != map.get(p) {
+            nfence.insert(p);
+            if !nfence.contains(&p.step(Dir::W)) {
+                ncount += 1;
+            }
+        }
+        if map.get(p.step(Dir::S)) != map.get(p) {
+            sfence.insert(p);
+            if !sfence.contains(&p.step(Dir::W)) {
+                scount += 1;
+            }
+        }
+        if map.get(p.step(Dir::E)) != map.get(p) {
+            efence.insert(p);
+            if !efence.contains(&p.step(Dir::N)) {
+                ecount += 1;
+            }
+        }
+        if map.get(p.step(Dir::W)) != map.get(p) {
+            wfence.insert(p);
+            if !wfence.contains(&p.step(Dir::N)) {
+                wcount += 1;
+            }
         }
     }
-    println!("Part 1: {:?}", costs);
-}
-
-
-fn part2(stones: &Map) {
-    println!("Part 2: {:?}", 2);
+    area * (ncount + ecount + wcount + scount)
 }
 
 fn main() {
     let start = Instant::now();
     let mut input = AocInput::new("inputs/day12.txt");
     let map = input.read_map();
-    part1(&map);
-    part2(&map);
+    let mut done: HashSet<Pos> = HashSet::new();
+    let mut costs1 = 0;
+    let mut costs2 = 0;
+    for (p, _) in map.enumerate() {
+        if !done.contains(&p) {
+            let plot = fill(p, &map);
+            costs1 += calc_costs1(&plot, &map);
+            costs2 += calc_costs2(&plot, &map);
+            done.extend(&plot);
+        }
+    }
+    println!("Part 1: {:?}", costs1);
+    println!("Part 2: {:?}", costs2);
     let duration = start.elapsed();
     println!("Time: {:?}", duration);
 }

@@ -1,6 +1,5 @@
-use adventofcode2024::ascii::{Dir, Map, Pos};
 use adventofcode2024::input::AocInput;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::time::Instant;
 
 fn split_count(stone: i64, blinks: i64, cache: &mut HashMap<(i64, i64), i64>) -> i64 {
@@ -48,7 +47,7 @@ fn part2(stones: &Vec<i64>) {
 fn main() {
     let start = Instant::now();
     let mut input = AocInput::new("inputs/day11.txt");
-    let mut stones = input.read_vector_of_number_rows()[0].clone();
+    let stones = input.read_vector_of_number_rows()[0].clone();
     part1(&stones);
     part2(&stones);
     let duration = start.elapsed();

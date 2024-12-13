@@ -41,7 +41,9 @@ fn part2(problems: &Vec<Problem>) {
             if v1 % v2 == 0 {
                 let b = v1 / v2;
                 let a = (tx - (b * p.bx)) / p.ax;
-                tokens += (a * 3 + b) as u64;
+                if a * p.ax + b * p.bx == tx {
+                    tokens += (a * 3 + b) as u64;
+                }
             }
         } else {
             panic!("{:?}", p);

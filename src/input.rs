@@ -37,8 +37,13 @@ impl AocInput {
         }
     }
 
-    fn has_data(self: &AocInput) -> bool {
+    pub fn has_data(self: &AocInput) -> bool {
         self.current_line.is_some() && !self.current_line.as_ref().unwrap().is_empty()
+    }
+
+    pub fn is_finished(self: &mut AocInput) -> bool {
+        self.skip_empty();
+        self.current_line.is_none()
     }
 
     fn current(self: &AocInput) -> &String {

@@ -146,6 +146,6 @@ impl AocInput {
             let line = self.read_line();
             c.push(line.chars().collect());
         }
-        Map::new(c)
+        Map::from(c)
     }
 }

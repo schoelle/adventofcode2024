@@ -64,7 +64,7 @@ pub struct Pos(pub i64, pub i64);
 #[allow(dead_code)]
 impl Pos {
     pub fn wrap(&self, width: i64, height: i64) -> Pos {
-        Pos(self.0.rem_euclid(width), self.0.rem_euclid(height))
+        Pos(self.0.rem_euclid(width), self.1.rem_euclid(height))
     }
 
     pub fn nstep(&self, dir: Dir, cnt: i64) -> Pos {
@@ -98,7 +98,13 @@ pub struct Map {
 
 #[allow(dead_code)]
 impl Map {
-    pub fn new(content: Vec<Vec<char>>) -> Map {
+    
+    pub fn new(xsize: i64, ysize: i64, fill: char) -> Map {
+        let c = (0..ysize).map(|_| vec![fill;xsize as usize]).collect();
+        Map::from(c)
+    }
+    
+    pub fn from(content: Vec<Vec<char>>) -> Map {
         assert!(!content.is_empty());
         assert!(!content.get(0).unwrap().is_empty());
         let height = content.len() as i64;

@@ -99,6 +99,7 @@ impl Pos {
     }
 }
 
+#[derive(Clone)]
 pub struct Map {
     pub width: i64,
     pub height: i64,

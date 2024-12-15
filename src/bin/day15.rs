@@ -7,6 +7,7 @@ fn gps(map: &Map, c: char) -> i64 {
 }
 
 fn try_step(m: &mut Map, p: Pos, d: Dir) -> bool {
+    // Simple move-if-possible-and-report used for part 1 only
     let c = m.get(p);
     let t = p.step(d);
     match c {
@@ -16,7 +17,7 @@ fn try_step(m: &mut Map, p: Pos, d: Dir) -> bool {
             if try_step(m, t, d) {
                 m.set(t, m.get(p));
                 m.set(p, '.');
-                return true;        
+                return true;
             }
             false
         }
@@ -117,36 +118,24 @@ fn stretch(map: &Map) -> Map {
     res
 }
 
-fn part1(input: &mut AocInput) {
-    let mut state = input.read_map();
-    let dirs: Vec<Dir> = input
-        .read_lines()
-        .iter()
-        .map(|l| l.chars().map(|c| Dir::from(c)))
-        .flatten()
-        .collect();
+fn part1(init: &Map, dirs: &Vec<Dir>) {
+    let mut state = init.clone();
     let mut robot = *state.find('@').first().unwrap();
     for d in dirs {
-        if try_step(&mut state, robot, d) {
-            robot = robot.step(d);
+        if try_step(&mut state, robot, *d) {
+            robot = robot.step(*d);
         }
     }
     println!("Part 1: {:?}", gps(&state, 'O'));
 }
 
-fn part2(input: &mut AocInput) {
-    let mut state = stretch(&input.read_map());
-    let dirs: Vec<Dir> = input
-        .read_lines()
-        .iter()
-        .map(|l| l.chars().map(|c| Dir::from(c)))
-        .flatten()
-        .collect();
+fn part2(init: &Map, dirs: &Vec<Dir>) {
+    let mut state = stretch(init);
     let mut robot = *state.find('@').first().unwrap();
     for d in dirs {
-        if can_step(&state, robot, d) {
-            do_step(&mut state, robot, d);
-            robot = robot.step(d);
+        if can_step(&state, robot, *d) {
+            do_step(&mut state, robot, *d);
+            robot = robot.step(*d);
         }
     }
     println!("Part 2: {}", gps(&state, '['));
@@ -155,10 +144,16 @@ fn part2(input: &mut AocInput) {
 fn main() {
     let start = Instant::now();
     let mut input = AocInput::new("inputs/day15.txt");
+    let map = &input.read_map();
+    let dirs: Vec<Dir> = input
+        .read_lines()
+        .iter()
+        .map(|l| l.chars().map(|c| Dir::from(c)))
+        .flatten()
+        .collect();
 
-    part1(&mut input);
-    input.reset();
-    part2(&mut input);
+    part1(&map, &dirs);
+    part2(&map, &dirs);
 
     let duration = start.elapsed();
     println!("Time: {:?}", duration);

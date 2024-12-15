@@ -56,6 +56,16 @@ impl Dir {
             Dir::NW => '?',
         }
     }
+
+    pub fn from(c: char) -> Dir {
+        match c {
+            '^' => Dir::N,
+            '>' => Dir::E,
+            '<' => Dir::W,
+            'v' => Dir::S,
+            _ => panic!("Unknown Dir")
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -98,12 +108,12 @@ pub struct Map {
 
 #[allow(dead_code)]
 impl Map {
-    
+
     pub fn new(xsize: i64, ysize: i64, fill: char) -> Map {
         let c = (0..ysize).map(|_| vec![fill;xsize as usize]).collect();
         Map::from(c)
     }
-    
+
     pub fn from(content: Vec<Vec<char>>) -> Map {
         assert!(!content.is_empty());
         assert!(!content.get(0).unwrap().is_empty());

@@ -7,20 +7,20 @@ fn gps(map: &Map, c: char) -> i64 {
 }
 
 fn try_step(m: &mut Map, p: Pos, d: Dir) -> bool {
-    let i = m.get(p);
-    if i == '.' {
-        return true;
-    }
-    if i == '#' {
-        return false;
-    }
+    let c = m.get(p);
     let t = p.step(d);
-    if try_step(m, t, d) {
-        m.set(t, m.get(p));
-        m.set(p, '.');
-        return true;
+    match c {
+        '.' => true,
+        '#' => false,
+        _ => {
+            if try_step(m, t, d) {
+                m.set(t, m.get(p));
+                m.set(p, '.');
+                return true;        
+            }
+            false
+        }
     }
-    false
 }
 
 fn can_step(m: &Map, p: Pos, d: Dir) -> bool {
@@ -29,23 +29,15 @@ fn can_step(m: &Map, p: Pos, d: Dir) -> bool {
     match i {
         '.' => true,
         '#' => false,
-        '[' => {
-            if d == Dir::N || d == Dir::S {
-                let r = t.step(Dir::E);
-                can_step(m, t, d) && can_step(m, r, d)
-            } else {
-                can_step(m, t.step(d), d)
-            }
+        '[' => match d {
+            Dir::N | Dir::S => can_step(m, t, d) && can_step(m, t.step(Dir::E), d),
+            _ => can_step(m, t.step(d), d)
+        },
+        ']' => match d {
+            Dir::N | Dir::S => can_step(m, t, d) && can_step(m, t.step(Dir::W), d),
+            _ => can_step(m, t.step(d), d)
         }
-        ']' => {
-            if d == Dir::N || d == Dir::S {
-                let r = t.step(Dir::W);
-                can_step(m, t, d) && can_step(m, r, d)
-            } else {
-                can_step(m, t.step(d), d)
-            }
-        }
-        _ => can_step(m, t, d)
+        _ => can_step(m, t, d),
     }
 }
 
@@ -55,44 +47,40 @@ fn do_step(m: &mut Map, p: Pos, d: Dir) {
     match i {
         '.' => {}
         '#' => panic!("Trying to move walls"),
-        '[' => {
-            match d {
-                Dir::N | Dir::S => {
-                    do_step(m, t, d);
-                    do_step(m, t.step(Dir::E), d);
-                    m.set(t, '[');
-                    m.set(t.step(Dir::E), ']');
-                    m.set(p, '.');
-                    m.set(p.step(Dir::E), '.');
-                }
-                Dir::E => {
-                    do_step(m, t.step(d), d);
-                    m.set(p.step(d).step(d), ']');
-                    m.set(p.step(d), '[');
-                    m.set(p, '.');
-                }
-                _ => panic!("Illegal move")
+        '[' => match d {
+            Dir::N | Dir::S => {
+                do_step(m, t, d);
+                do_step(m, t.step(Dir::E), d);
+                m.set(t, '[');
+                m.set(t.step(Dir::E), ']');
+                m.set(p, '.');
+                m.set(p.step(Dir::E), '.');
             }
-        }
-        ']' => {
-            match d {
-                Dir::N | Dir::S => {
-                    do_step(m, t, d);
-                    do_step(m, t.step(Dir::W), d);
-                    m.set(t, ']');
-                    m.set(t.step(Dir::W), '[');
-                    m.set(p, '.');
-                    m.set(p.step(Dir::W), '.');
-                }
-                Dir::W => {
-                    do_step(m, t.step(d), d);
-                    m.set(p.step(d).step(d), '[');
-                    m.set(p.step(d), ']');
-                    m.set(p, '.');
-                }
-                _ => panic!("Illegal move")
+            Dir::E => {
+                do_step(m, t.step(d), d);
+                m.set(p.step(d).step(d), ']');
+                m.set(p.step(d), '[');
+                m.set(p, '.');
             }
-        }
+            _ => panic!("Illegal move"),
+        },
+        ']' => match d {
+            Dir::N | Dir::S => {
+                do_step(m, t, d);
+                do_step(m, t.step(Dir::W), d);
+                m.set(t, ']');
+                m.set(t.step(Dir::W), '[');
+                m.set(p, '.');
+                m.set(p.step(Dir::W), '.');
+            }
+            Dir::W => {
+                do_step(m, t.step(d), d);
+                m.set(p.step(d).step(d), '[');
+                m.set(p.step(d), ']');
+                m.set(p, '.');
+            }
+            _ => panic!("Illegal move"),
+        },
         _ => {
             do_step(m, t, d);
             m.set(t, '@');
@@ -123,7 +111,7 @@ fn stretch(map: &Map) -> Map {
                 res.set(p1, '@');
                 res.set(p2, '.');
             }
-            _ => panic!("Unknown map content!")
+            _ => panic!("Unknown map content!"),
         }
     }
     res

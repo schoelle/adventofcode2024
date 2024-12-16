@@ -5,11 +5,11 @@ use std::collections::{BinaryHeap, HashSet};
 use std::time::Instant;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct State(Pos, Dir, i64, i64);
+struct State(Pos, Dir, i64);
 
 impl Ord for State {
     fn cmp(&self, other: &Self) -> Ordering {
-        other.3.cmp(&self.3)
+        other.2.cmp(&self.2)
     }
 }
 
@@ -19,42 +19,23 @@ impl PartialOrd for State {
     }
 }
 
-fn dist(a: Pos, b: Pos) -> i64 {
-    ((a.0 - b.0).abs() + (a.1 - b.1).abs()) * 2
-}
-
 fn part1(map: &Map, start: Pos, end: Pos) {
     let mut work: BinaryHeap<State> = BinaryHeap::new();
-    let mut done: HashSet<(Pos,Dir)> = HashSet::new();
-    work.push(State(start, Dir::E, 0, 0 + dist(start, end)));
+    let mut done: HashSet<(Pos, Dir)> = HashSet::new();
+    work.push(State(start, Dir::E, 0));
     while let Some(s) = work.pop() {
         if done.contains(&(s.0, s.1)) {
             continue;
         }
-        // let mut cmap = map.clone();
-        // cmap.set(s.0, s.1.to_char());
-        // println!("{}", cmap.to_string());
-        // println!("{:?}", s);
-
         if s.0 == end {
             println!("Part 1: {:?}", s.2);
             return;
         }
-        work.push(State(
-            s.0,
-            s.1.right90(),
-            s.2 + 1000,
-            s.2 + 1000 + dist(s.0, end),
-        ));
-        work.push(State(
-            s.0,
-            s.1.left90(),
-            s.2 + 1000,
-            s.2 + 1000 + dist(s.0, end),
-        ));
+        work.push(State(s.0, s.1.right90(), s.2 + 1000));
+        work.push(State(s.0, s.1.left90(), s.2 + 1000));
         let t = s.0.step(s.1);
         if map.get(t) == '.' {
-            work.push(State(t, s.1, s.2 + 1, s.2 + 1 + dist(s.0, end)));
+            work.push(State(t, s.1, s.2 + 1));
         }
         done.insert((s.0, s.1));
     }

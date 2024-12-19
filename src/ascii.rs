@@ -95,7 +95,7 @@ impl Pos {
     }
 
     pub fn sub(&self, other: &Pos) -> (i64, i64) {
-        return (self.0 - other.0, self.1 - other.1);
+        (self.0 - other.0, self.1 - other.1)
     }
 }
 

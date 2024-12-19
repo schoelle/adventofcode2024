@@ -1,6 +1,6 @@
-use std::collections::VecDeque;
 use adventofcode2024::ascii::{Dir, Map, Pos};
 use adventofcode2024::input::AocInput;
+use std::collections::VecDeque;
 use std::time::Instant;
 
 const MAP_SIZE: i64 = 71;
@@ -30,9 +30,10 @@ fn part1(bytes: &Vec<Pos>) {
     bytes.iter().take(1024).for_each(|p| map.set(*p, '#'));
     println!("Part 1: {}", path_length(&map));
 }
+
 fn part2(bytes: &Vec<Pos>) {
     let mut map = Map::new(MAP_SIZE, MAP_SIZE, '.');
-    
+
     for b in bytes {
         map.set(*b, '#');
         if path_length(&map) == i64::MAX {
@@ -41,6 +42,7 @@ fn part2(bytes: &Vec<Pos>) {
         }
     }
 }
+
 fn main() {
     let start = Instant::now();
     let mut input = AocInput::new("inputs/day18.txt");

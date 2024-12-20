@@ -8,7 +8,7 @@ fn diamond(n: i64) -> Vec<Pos> {
     for x in -n..=n {
         for y in -n..=n {
             if x.abs() + y.abs() <= n {
-                res.push(Pos(x,y));
+                res.push(Pos(x, y));
             }
         }
     }
@@ -35,8 +35,15 @@ fn distance_map(start: Pos, map: &Map) -> Vec<Vec<i64>> {
     dist
 }
 
-fn find_shortcuts(map: &Map, sdist: &Vec<Vec<i64>>, edist: &Vec<Vec<i64>>, max: i64) {
-    let offsets: Vec<Pos> = diamond(2);
+fn picos(
+    map: &Map,
+    sdist: &Vec<Vec<i64>>,
+    edist: &Vec<Vec<i64>>,
+    max: i64,
+    cutoff: i64,
+    skip: i64,
+) -> i64 {
+    let offsets: Vec<Pos> = diamond(skip);
 
     let mut cnt = 0;
     for (p, _) in map.enumerate() {
@@ -47,13 +54,9 @@ fn find_shortcuts(map: &Map, sdist: &Vec<Vec<i64>>, edist: &Vec<Vec<i64>>, max: 
                 if map.valid_pos(t) {
                     let td = edist[t.1 as usize][t.0 as usize];
                     if td < i64::MAX {
-                        let total = sd + 2 + td;
-                        if total <= max - 100 {
-                            // let mut m = map.clone();
-                            // m.set(p,'1');
-                            // m.set(t,'2');
-                            // println!("{}", m.to_string());
-                            // println!("{:?} {:?} {} {} {}", p, t, total, max, max - total);
+                        let dist = (t.0 - p.0).abs() + (t.1 - p.1).abs();
+                        let total = sd + dist + td;
+                        if total <= max - cutoff {
                             cnt += 1;
                         }
                     }
@@ -61,7 +64,7 @@ fn find_shortcuts(map: &Map, sdist: &Vec<Vec<i64>>, edist: &Vec<Vec<i64>>, max: 
             }
         }
     }
-    println!("Part 1 {:?}", cnt);
+    cnt
 }
 
 fn main() {
@@ -73,17 +76,12 @@ fn main() {
     map.set(start_loc, '.');
     map.set(end_loc, '.');
 
-    let start_distances = distance_map(start_loc, &map);
-    let end_distances = distance_map(end_loc, &map);
+    let sdist = distance_map(start_loc, &map);
+    let edist = distance_map(end_loc, &map);
+    let max = sdist[end_loc.1 as usize][end_loc.0 as usize];
 
-    find_shortcuts(
-        &map,
-        &start_distances,
-        &end_distances,
-        start_distances[end_loc.1 as usize][end_loc.0 as usize],
-    );
-
-    println!("{:?}", 1);
+    println!("Part 1: {}", picos(&map, &sdist, &edist, max, 100, 2));
+    println!("Part 2: {}", picos(&map, &sdist, &edist, max, 100, 20));
 
     let duration = start.elapsed();
     println!("Time: {:?}", duration);

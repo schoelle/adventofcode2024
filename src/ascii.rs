@@ -1,4 +1,5 @@
 use enum_iterator::Sequence;
+use std::ops::Add;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Sequence)]
 #[allow(dead_code)]
@@ -63,7 +64,7 @@ impl Dir {
             '>' => Dir::E,
             '<' => Dir::W,
             'v' => Dir::S,
-            _ => panic!("Unknown Dir")
+            _ => panic!("Unknown Dir"),
         }
     }
 }
@@ -99,6 +100,14 @@ impl Pos {
     }
 }
 
+impl Add for Pos {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self::Output {
+        Pos(self.0 + other.0, self.1 + other.1)
+    }
+}
+
 #[derive(Clone)]
 pub struct Map {
     pub width: i64,
@@ -109,9 +118,8 @@ pub struct Map {
 
 #[allow(dead_code)]
 impl Map {
-
     pub fn new(xsize: i64, ysize: i64, fill: char) -> Map {
-        let c = (0..ysize).map(|_| vec![fill;xsize as usize]).collect();
+        let c = (0..ysize).map(|_| vec![fill; xsize as usize]).collect();
         Map::from(c)
     }
 

@@ -35,14 +35,7 @@ fn distance_map(start: Pos, map: &Map) -> Vec<Vec<i64>> {
     dist
 }
 
-fn picos(
-    map: &Map,
-    sdist: &Vec<Vec<i64>>,
-    edist: &Vec<Vec<i64>>,
-    max: i64,
-    cutoff: i64,
-    skip: i64,
-) -> i64 {
+fn picos(map: &Map, sdist: &Vec<Vec<i64>>, edist: &Vec<Vec<i64>>, max: i64, skip: i64) -> i64 {
     let offsets: Vec<Pos> = diamond(skip);
 
     let mut cnt = 0;
@@ -56,7 +49,7 @@ fn picos(
                     if td < i64::MAX {
                         let dist = (t.0 - p.0).abs() + (t.1 - p.1).abs();
                         let total = sd + dist + td;
-                        if total <= max - cutoff {
+                        if total <= max - 100 {
                             cnt += 1;
                         }
                     }
@@ -80,8 +73,8 @@ fn main() {
     let edist = distance_map(end_loc, &map);
     let max = sdist[end_loc.1 as usize][end_loc.0 as usize];
 
-    println!("Part 1: {}", picos(&map, &sdist, &edist, max, 100, 2));
-    println!("Part 2: {}", picos(&map, &sdist, &edist, max, 100, 20));
+    println!("Part 1: {}", picos(&map, &sdist, &edist, max, 2));
+    println!("Part 2: {}", picos(&map, &sdist, &edist, max, 20));
 
     let duration = start.elapsed();
     println!("Time: {:?}", duration);

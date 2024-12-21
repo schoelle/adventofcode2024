@@ -1,238 +1,108 @@
-use crate::Constraint::*;
 use adventofcode2024::ascii::Pos;
 use adventofcode2024::input::AocInput;
 use std::time::Instant;
 
-#[derive(Debug, PartialEq, Eq, Copy, Clone)]
-enum Constraint {
-    ANY,
-    VFIRST,
-    HFIRST,
-}
-
-#[derive(Debug, Copy, Clone)]
-struct Move {
-    x: i64,
-    y: i64,
-    rule: Constraint,
-}
-
-impl Move {
-    fn cost(self: &Move) -> i64 {
-        self.x.abs() + self.y.abs() + 1
-    }
-}
-
-fn num_pad_move(init: Pos, c: char) -> (Pos, Move) {
-    match c {
-        'A' => (
-            Pos(2, 3),
-            Move {
-                x: 2 - init.0,
-                y: 3 - init.1,
-                rule: if init.0 == 0 { HFIRST } else { ANY },
-            },
-        ),
-        '0' => (
-            Pos(1, 3),
-            Move {
-                x: 1 - init.0,
-                y: 3 - init.1,
-                rule: if init.0 == 0 { HFIRST } else { ANY },
-            },
-        ),
-        '1' => (
-            Pos(0, 2),
-            Move {
-                x: 0 - init.0,
-                y: 2 - init.1,
-                rule: if init.1 == 3 { VFIRST } else { ANY },
-            },
-        ),
-        '2' => (
-            Pos(1, 2),
-            Move {
-                x: 1 - init.0,
-                y: 2 - init.1,
-                rule: ANY,
-            },
-        ),
-        '3' => (
-            Pos(2, 2),
-            Move {
-                x: 2 - init.0,
-                y: 2 - init.1,
-                rule: ANY,
-            },
-        ),
-        '4' => (
-            Pos(0, 1),
-            Move {
-                x: 0 - init.0,
-                y: 1 - init.1,
-                rule: if init.1 == 3 { VFIRST } else { ANY },
-            },
-        ),
-        '5' => (
-            Pos(1, 1),
-            Move {
-                x: 1 - init.0,
-                y: 1 - init.1,
-                rule: ANY,
-            },
-        ),
-        '6' => (
-            Pos(2, 1),
-            Move {
-                x: 2 - init.0,
-                y: 1 - init.1,
-                rule: ANY,
-            },
-        ),
-        '7' => (
-            Pos(0, 0),
-            Move {
-                x: 0 - init.0,
-                y: 0 - init.1,
-                rule: if init.1 == 3 { VFIRST } else { ANY },
-            },
-        ),
-        '8' => (
-            Pos(1, 0),
-            Move {
-                x: 1 - init.0,
-                y: 0 - init.1,
-                rule: ANY,
-            },
-        ),
-        '9' => (
-            Pos(2, 0),
-            Move {
-                x: 2 - init.0,
-                y: 0 - init.1,
-                rule: ANY,
-            },
-        ),
-        _ => panic!("Unknown Char"),
-    }
-}
-
-fn dir_pad_move(init: Pos, c: char) -> (Pos, Move) {
-    match c {
-        'A' => (
-            Pos(2, 0),
-            Move {
-                x: 2 - init.0,
-                y: 0 - init.1,
-                rule: if init.0 == 1 { HFIRST } else { ANY },
-            },
-        ),
-        '^' => (
-            Pos(1, 0),
-            Move {
-                x: 1 - init.0,
-                y: 0 - init.1,
-                rule: if init.0 == 1 { HFIRST } else { ANY },
-            },
-        ),
-        '<' => (
-            Pos(0, 1),
-            Move {
-                x: 0 - init.0,
-                y: 1 - init.1,
-                rule: if init.1 == 0 { VFIRST } else { ANY },
-            },
-        ),
-        'v' => (
-            Pos(1, 1),
-            Move {
-                x: 1 - init.0,
-                y: 1 - init.1,
-                rule: ANY,
-            },
-        ),
-        '>' => (
-            Pos(2, 1),
-            Move {
-                x: 2 - init.0,
-                y: 1 - init.1,
-                rule: ANY,
-            },
-        ),
-        _ => panic!("Unknown Char"),
-    }
-}
-
-fn dir_moves_for_move(init: Pos, mve: Move) -> (Pos, Vec<Move>) {
-    let mut hfirst_moves: Vec<Move> = Vec::new();
-    let mut hfirst_pos: Pos = init;
-    for _ in 0..mve.x.abs() {
-        let c = if mve.x > 0 { '>' } else { '<' };
-        let (p, m) = dir_pad_move(hfirst_pos, c);
-        hfirst_pos = p;
-        hfirst_moves.push(m);
-    }
-    for _ in 0..mve.y.abs() {
-        let c = if mve.y > 0 { 'v' } else { '^' };
-        let (p, m) = dir_pad_move(hfirst_pos, c);
-        hfirst_pos = p;
-        hfirst_moves.push(m);
-    }
-    let mut vfirst_moves: Vec<Move> = Vec::new();
-    let mut vfirst_pos: Pos = init;
-    for _ in 0..mve.y.abs() {
-        let c = if mve.y > 0 { 'v' } else { '^' };
-        let (p, m) = dir_pad_move(vfirst_pos, c);
-        vfirst_pos = p;
-        vfirst_moves.push(m);
-    }
-    for _ in 0..mve.x.abs() {
-        let c = if mve.x > 0 { '>' } else { '<' };
-        let (p, m) = dir_pad_move(vfirst_pos, c);
-        vfirst_pos = p;
-        vfirst_moves.push(m);
-    }
-
-    let (vp, vm) = dir_pad_move(vfirst_pos, 'A');
-    vfirst_pos = vp;
-    vfirst_moves.push(vm);
-    let (vp, vm) = dir_pad_move(hfirst_pos, 'A');
-    hfirst_pos = vp;
-    hfirst_moves.push(vm);
-
-    match mve.rule {
-        VFIRST => (vfirst_pos, vfirst_moves),
-        HFIRST => (hfirst_pos, hfirst_moves),
-        ANY => {
-            let vcost: i64 = vfirst_moves.iter().map(|m| m.cost()).sum();
-            let hcost: i64 = hfirst_moves.iter().map(|m| m.cost()).sum();
-            if vcost < hcost {
-                (vfirst_pos, vfirst_moves)
-            } else {
-                (hfirst_pos, hfirst_moves)
-            }
+fn path(from: Pos, to: Pos) -> (Vec<char>, Vec<char>) {
+    let xd = (from.0 - to.0).abs() as usize;
+    let yd = (from.1 - to.1).abs() as usize;
+    let (xc, yc) = if from.0 > to.0 {
+        if from.1 > to.1 {
+            ('<', '^')
+        } else {
+            ('<', 'v')
         }
-    }
+    } else {
+        if from.1 > to.1 {
+            ('>', '^')
+        } else {
+            ('>', 'v')
+        }
+    };
+    let v1 = [vec![xc; xd], vec![yc; yd], vec!['A']].concat();
+    let v2 = [vec![yc; yd], vec![xc; xd], vec!['A']].concat();
+    (v1, v2)
 }
 
-fn calc_num_moves(init: Pos, seq: &Vec<char>) -> Vec<Move> {
-    let mut pos = init;
-    let mut res = Vec::new();
-    for s in seq {
-        let (p, m) = num_pad_move(pos, *s);
-        pos = p;
-        res.push(m);
+fn num_pad_paths(source: Pos, code: &Vec<char>) -> Vec<Vec<char>> {
+    if code.is_empty() {
+        return vec![vec![]];
     }
+    let target = match code.first().unwrap() {
+        'A' => Pos(2, 3),
+        '0' => Pos(1, 3),
+        '1' => Pos(0, 2),
+        '2' => Pos(1, 2),
+        '3' => Pos(2, 2),
+        '4' => Pos(0, 1),
+        '5' => Pos(1, 1),
+        '6' => Pos(2, 1),
+        '7' => Pos(0, 0),
+        '8' => Pos(1, 0),
+        '9' => Pos(2, 0),
+        _ => panic!("Illegal Char"),
+    };
+    let (hfirst, vfirst) = path(source, target);
+    let mut res = Vec::new();
+    if source.0 == 0 && target.1 == 3 {
+        for s in num_pad_paths(target, &code[1..].to_vec()) {
+            res.push([hfirst.clone(), s.clone()].concat());
+        }
+    } else if source.1 == 3 && target.0 == 0 {
+        for s in num_pad_paths(target, &code[1..].to_vec()) {
+            res.push([vfirst.clone(), s.clone()].concat());
+        }
+    } else if source.0 == target.0 || source.1 == target.1 {
+        for s in num_pad_paths(target, &code[1..].to_vec()) {
+            res.push([vfirst.clone(), s.clone()].concat());
+        }
+    } else {
+        for s in num_pad_paths(target, &code[1..].to_vec()) {
+            res.push([vfirst.clone(), s.clone()].concat());
+            res.push([hfirst.clone(), s.clone()].concat());
+        }
+    };
     res
 }
 
-fn calc_dir_moves(init: Pos, seq: &Vec<Move>) -> Vec<Move> {
-    let mut pos = init;
+fn dir_pad_paths(source: Pos, code: &Vec<char>) -> Vec<Vec<char>> {
+    if code.is_empty() {
+        return vec![vec![]];
+    }
+    let target = match code.first().unwrap() {
+        'A' => Pos(2, 0),
+        '^' => Pos(1, 0),
+        '<' => Pos(0, 1),
+        'v' => Pos(1, 1),
+        '>' => Pos(2, 1),
+        _ => panic!("Illegal Char"),
+    };
+    let (hfirst, vfirst) = path(source, target);
     let mut res = Vec::new();
-    for s in seq {
-        let (p, m) = dir_moves_for_move(pos, *s);
-        pos = p;
-        res.extend(m);
+    if source.0 == 0 && target.1 == 0 {
+        for s in dir_pad_paths(target, &code[1..].to_vec()) {
+            res.push([hfirst.clone(), s.clone()].concat());
+        }
+    } else if source.1 == 0 && target.0 == 0 {
+        for s in dir_pad_paths(target, &code[1..].to_vec()) {
+            res.push([vfirst.clone(), s.clone()].concat());
+        }
+    } else if source.0 == target.0 || source.1 == target.1 {
+        for s in dir_pad_paths(target, &code[1..].to_vec()) {
+            res.push([vfirst.clone(), s.clone()].concat());
+        }
+    } else {
+        for s in dir_pad_paths(target, &code[1..].to_vec()) {
+            res.push([vfirst.clone(), s.clone()].concat());
+            res.push([hfirst.clone(), s.clone()].concat());
+        }
+    };
+    res
+}
+
+fn collect_paths(source: Pos, code: &Vec<Vec<char>>) -> Vec<Vec<char>> {
+    let mut res = Vec::new();
+    for c in code {
+        res.extend(dir_pad_paths(source, c));
     }
     res
 }
@@ -245,16 +115,10 @@ fn main() {
     for line in input.read_lines() {
         let chars: Vec<char> = line.chars().collect();
         let value: i64 = line[..line.len() - 1].parse().unwrap();
-        let moves1 = calc_num_moves(Pos(2, 3), &chars);
-        let moves2 = calc_dir_moves(Pos(2, 0), &moves1);
-        let moves3 = calc_dir_moves(Pos(2, 0), &moves2);
-        let costs: i64 = moves3.iter().map(|m| m.cost()).sum();
-        println!(
-            "{:?} {:?} {:?}",
-            line,
-            costs,
-            value
-        );
+        let s1 = num_pad_paths(Pos(2, 3), &chars);
+        let s2 = collect_paths(Pos(2, 0), &s1);
+        let s3 = collect_paths(Pos(2, 0), &s2);
+        let costs = s3.iter().map(|p| p.len() as i64).min().unwrap();
         total += value * costs;
     }
     println!("Part 1: {}", total);

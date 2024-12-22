@@ -107,10 +107,7 @@ fn collect_paths(source: Pos, code: &Vec<Vec<char>>) -> Vec<Vec<char>> {
     res
 }
 
-fn main() {
-    let start = Instant::now();
-    let mut input = AocInput::new("inputs/day21.txt");
-
+fn part1(input: &mut AocInput) {
     let mut total = 0;
     for line in input.read_lines() {
         let chars: Vec<char> = line.chars().collect();
@@ -122,6 +119,30 @@ fn main() {
         total += value * costs;
     }
     println!("Part 1: {}", total);
+}
+
+fn part2(input: &mut AocInput) {
+    let mut total = 0;
+    for line in input.read_lines() {
+        let chars: Vec<char> = line.chars().collect();
+        let value: i64 = line[..line.len() - 1].parse().unwrap();
+        let mut s = num_pad_paths(Pos(2, 3), &chars);
+        for _ in 0..3 {
+            s = collect_paths(Pos(2, 0), &s)
+        }
+        let costs = s.iter().map(|p| p.len() as i64).min().unwrap();
+        total += value * costs;
+    }
+    println!("Part 2: {}", total);
+}
+
+
+fn main() {
+    let start = Instant::now();
+    let mut input = AocInput::new("inputs/tst2.txt");
+    part1(&mut input);
+    input.reset();
+    part2(&mut input);
 
     let duration = start.elapsed();
     println!("Time: {:?}", duration);

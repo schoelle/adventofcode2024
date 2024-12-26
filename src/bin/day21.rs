@@ -1,6 +1,7 @@
 use adventofcode2024::ascii::Pos;
 use adventofcode2024::input::AocInput;
 use std::time::Instant;
+use regex::Regex;
 
 fn path(from: Pos, to: Pos) -> (String, String) {
     let xd = (from.0 - to.0).abs() as usize;
@@ -99,48 +100,38 @@ fn dir_pad_paths(source: Pos, code: &str) -> Vec<String> {
     res
 }
 
-fn collect_paths(source: Pos, code: &Vec<String>) -> Vec<String> {
-    let mut res = Vec::new();
-    for c in code {
-        res.extend(dir_pad_paths(source, c));
-    }
-    res
+fn split(code: &str) -> Vec<String> {
+    let re = Regex::new("[v<>^]*A").unwrap();
+    re.find_iter(code).into_iter().map(|m| m.as_str().to_string()).collect()
 }
 
-fn part1(input: &mut AocInput) {
-    let mut total = 0;
-    for line in input.read_lines() {
-        let value: i64 = line[..line.len() - 1].parse().unwrap();
-        let s1 = num_pad_paths(Pos(2, 3), &line);
-        let s2 = collect_paths(Pos(2, 0), &s1);
-        let s3 = collect_paths(Pos(2, 0), &s2);
-        let costs = s3.iter().map(|p| p.len() as i64).min().unwrap();
-        total += value * costs;
+fn dir_for_dir(code: &str, depth: i64) -> String {
+    if depth == 0 {
+        return code.to_string();
     }
-    println!("Part 1: {}", total);
-}
-
-fn part2(input: &mut AocInput) {
-    let mut total = 0;
-    for line in input.read_lines() {
-        let value: i64 = line[..line.len() - 1].parse().unwrap();
-        let mut s = num_pad_paths(Pos(2, 3), &line);
-        for _ in 0..2 {
-            s = collect_paths(Pos(2, 0), &s)
-        }
-        let costs = s.iter().map(|p| p.len() as i64).min().unwrap();
-        total += value * costs;
+    let parts = split(code);
+    let mut res: Vec<String> = Vec::new();
+    for part in parts {
+        let options = dir_pad_paths(Pos(2,0), &part);
+        res.push(options.iter().next().unwrap().clone());
     }
-    println!("Part 2: {}", total);
+    let s: String = res.into_iter().map(|s| s.to_string()).collect();
+    dir_for_dir(&s, depth-1)
 }
-
 
 fn main() {
     let start = Instant::now();
     let mut input = AocInput::new("inputs/tst2.txt");
-    part1(&mut input);
-    input.reset();
-    part2(&mut input);
+
+    for line in input.read_lines() {
+        let direct = num_pad_paths(Pos(2, 3), &line);
+        println!("Direct: {:?}", direct);
+        for d in direct {
+            let value: usize = line[..line.len() - 1].parse().unwrap();
+            let dd = dir_for_dir(&d, 2);
+            println!("  Indirect: {:?} {:?}", dd, dd.len() * value);
+        }
+    }
 
     let duration = start.elapsed();
     println!("Time: {:?}", duration);

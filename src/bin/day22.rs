@@ -11,19 +11,18 @@ fn rng(i: i64) -> i64 {
 
 fn prefix_dict(seq: &Vec<i64>) -> HashMap<[i64; 4], i64> {
     let mut res = HashMap::new();
-    let mut g: [i64; 4] = [0, seq[1] - seq[0],  seq[2] - seq[1], seq[3] - seq[2]];
+    let mut g: [i64; 4] = [0, seq[1] - seq[0], seq[2] - seq[1], seq[3] - seq[2]];
     for i in 4..seq.len() {
         g[0] = g[1];
         g[1] = g[2];
         g[2] = g[3];
-        g[3] = seq[i] - seq[i-1];
+        g[3] = seq[i] - seq[i - 1];
         if !res.contains_key(&g) {
             res.insert(g, seq[i]);
         }
     }
     res
 }
-
 
 fn main() {
     let start = Instant::now();
@@ -45,7 +44,7 @@ fn main() {
     }
     println!("Part 1: {}", sum);
 
-    let mut premap :HashMap<[i64;4], Vec<i64>> = HashMap::new();
+    let mut premap: HashMap<[i64; 4], Vec<i64>> = HashMap::new();
     for (_, v) in seq.iter() {
         let prefixes = prefix_dict(v);
         for (g, n) in prefixes {

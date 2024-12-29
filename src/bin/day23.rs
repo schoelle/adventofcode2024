@@ -11,8 +11,8 @@ fn bron_kerbosch(graph: &Edges, r: Nodes, mut p: Nodes, mut x: Nodes, cliques: &
         cliques.push(r);
     } else if !p.is_empty() {
         let nodes = p.iter().cloned().collect::<Nodes>();
-        nodes.iter().for_each(|node| {
-            let neighbours: &Nodes = graph.get(node).unwrap();
+        for node in nodes {
+            let neighbours: &Nodes = graph.get(&node).unwrap();
             let mut to_add: Nodes = Nodes::new();
             to_add.insert(node.clone());
             bron_kerbosch(
@@ -22,9 +22,9 @@ fn bron_kerbosch(graph: &Edges, r: Nodes, mut p: Nodes, mut x: Nodes, cliques: &
                 x.intersection(&neighbours).cloned().collect(),
                 cliques,
             );
-            p.remove(node);
+            p.remove(&node);
             x.insert(node.clone());
-        });
+        }
     }
 }
 

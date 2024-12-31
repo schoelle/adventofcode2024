@@ -17,6 +17,39 @@ struct Rule {
     op: Op,
 }
 
+fn part1(rules: &HashMap<String, Rule>, values: &mut HashMap<String, bool>) {
+    let mut todo = rules.clone();
+
+    while !todo.is_empty() {
+        let dup = todo.clone();
+        let (k, r) = dup
+            .into_iter()
+            .filter(|(_, v)| values.contains_key(&v.a) && values.contains_key(&v.b))
+            .next()
+            .unwrap();
+        todo.remove(&k);
+        values.insert(
+            k,
+            match r.op {
+                Op::AND => *values.get(&r.a).unwrap() && *values.get(&r.b).unwrap(),
+                Op::OR => *values.get(&r.a).unwrap() || *values.get(&r.b).unwrap(),
+                Op::XOR => *values.get(&r.a).unwrap() != *values.get(&r.b).unwrap(),
+            },
+        );
+    }
+
+    let mut i = 0u32;
+    let mut res = 0i64;
+    while let Some((_, v)) = values.get_key_value(&format!("z{:02}", i)) {
+        if *v {
+            res += 2i64.pow(i);
+        }
+        i += 1;
+    }
+
+    println!("Part 1: {}", res);
+}
+
 fn main() {
     let start = Instant::now();
     let mut input = AocInput::new("inputs/day24.txt");
@@ -40,39 +73,14 @@ fn main() {
                 "AND" => Op::AND,
                 "OR" => Op::OR,
                 "XOR" => Op::XOR,
-                _ => panic!("Unknown operation")
+                _ => panic!("Unknown operation"),
             };
             rules.insert(out, Rule { a, b, op });
         }
     }
 
-    let mut todo = rules.clone();
-
-    while !todo.is_empty() {
-        let dup = todo.clone();
-        let (k, r) = dup.into_iter().filter(
-            |(_, v)| values.contains_key(&v.a) && values.contains_key(&v.b)
-        ).next().unwrap();
-        todo.remove(&k);
-        values.insert(k, match r.op {
-            Op::AND => *values.get(&r.a).unwrap() && *values.get(&r.b).unwrap(),
-            Op::OR => *values.get(&r.a).unwrap() || *values.get(&r.b).unwrap(),
-            Op::XOR => *values.get(&r.a).unwrap() != *values.get(&r.b).unwrap()
-        });
-    }
-
-    let mut i = 0u32;
-    let mut res = 0i64;
-    while let Some((_, v)) = values.get_key_value(&format!("z{:02}", i)) {
-        if *v {
-            res += 2i64.pow(i);
-        }
-        i += 1;
-    }
-
-    println!("Part 1: {}", res);
-
-
+    part1(&rules, &mut values);
+    
     let duration = start.elapsed();
     println!("Time: {:?}", duration);
 }

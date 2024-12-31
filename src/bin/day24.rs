@@ -22,12 +22,12 @@ fn main() {
     let mut input = AocInput::new("inputs/day24.txt");
     let re1 = Regex::new("(.*): ([01])").unwrap();
     let re2 = Regex::new("(.*) (AND|OR|XOR) (.*) -> (.*)").unwrap();
-    let mut init: HashMap<String, bool> = HashMap::new();
+    let mut values: HashMap<String, bool> = HashMap::new();
     for line in input.read_lines() {
         if let Some(c) = re1.captures(&line) {
             let varname = c.get(1).unwrap().as_str().to_string();
             let value = c.get(2).unwrap().as_str() == "1";
-            init.insert(varname, value);
+            values.insert(varname, value);
         }
     }
     let mut rules: HashMap<String, Rule> = HashMap::new();
@@ -46,18 +46,15 @@ fn main() {
         }
     }
 
-    let mut defined: Vec<String> = init.keys().cloned().collect();
     let mut todo = rules.clone();
-    let mut values = init.clone();
 
     while !todo.is_empty() {
         let dup = todo.clone();
-        let (k, r) = dup.iter().filter(
-            |(_, v)| defined.contains(&v.a) && defined.contains(&v.b)
+        let (k, r) = dup.into_iter().filter(
+            |(_, v)| values.contains_key(&v.a) && values.contains_key(&v.b)
         ).next().unwrap();
-        todo.remove(k);
-        defined.push(k.clone());
-        values.insert(k.clone(), match r.op {
+        todo.remove(&k);
+        values.insert(k, match r.op {
             Op::AND => *values.get(&r.a).unwrap() && *values.get(&r.b).unwrap(),
             Op::OR => *values.get(&r.a).unwrap() || *values.get(&r.b).unwrap(),
             Op::XOR => *values.get(&r.a).unwrap() != *values.get(&r.b).unwrap()
